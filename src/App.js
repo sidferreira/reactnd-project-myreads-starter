@@ -24,7 +24,7 @@ class BooksApp extends React.Component {
       const books = await BooksAPI.getAll()
       this.setState({books})
     } catch (error) {
-      alert(error.message)
+      alert(`Fetch error: ${error.message}`)
     }
   }
   
@@ -33,7 +33,7 @@ class BooksApp extends React.Component {
       await BooksAPI.update(book, nextShelf)
       this._getAll()
     } catch (error) {
-      alert(error.message)
+      alert(`Update error: ${error.message}`)
     }
   }
   
@@ -43,7 +43,7 @@ class BooksApp extends React.Component {
       searchBooks = searchBooks || []
       this.setState({searchBooks})
     } catch (error) {
-      alert(error.message)
+      alert(`Search error: ${error.message}`)
     }
   }
 
@@ -59,7 +59,8 @@ class BooksApp extends React.Component {
         <Route path='/search' 
           render={props => <Search 
             {...props} 
-            books={this.state.searchBooks}
+            books={this.state.books}
+            searchBooks={this.state.searchBooks}
             onBookSearch={this._onBookSearch} 
             onBookShelfChange={this._onBookShelfChange} />} 
         />
