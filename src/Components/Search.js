@@ -2,50 +2,24 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import Book from './Book'
-import * as BooksAPI from '../Services/BooksAPI'
 
-export default class Search extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      books: [],
-      searchTerms: ''
-    }
+export default class BooksApp extends Component {
+  state = {
+    searchTerms: ''
   }
-  
-  _handleSearch = ( { target } ) => {
-    const searchTerms = target.value || ''
+
+  _handleSearch = (searchTerms) => {
     this.setState({searchTerms})
-    this._searchBooks(searchTerms)
+    this.props.onBookSearch(searchTerms)
   }
 
-  _searchBooks = async searchTerms => {
-    let books = await BooksAPI.search(searchTerms)
-    books = books || []
-    this.setState({books})
-  }
-  
-  _onBookShelfChange = async (book, nextShelf, currentShelf) => {
-    try {
-      const result = await BooksAPI.update(book, nextShelf)
-      const books = this.state.books.map(_book => {
-        if (_book.id === book.id) {
-          _book.shelf = nextShelf
-        }
-        return _book
-      })
-      this.setState({books})
-    } catch (error) {
-      alert(error.message)
-    }
-  }
-  
   render () {
-    const { books } = this.state
-    return <div className="search-books">
-      <div className="search-books-bar">
-        <Link className="close-search" to="/">Close</Link>
-        <div className="search-books-input-wrapper">
+    const searchTerms = this.state.searchTerms
+    const { books, onBookShelfChange, onBookSearch } = this.props
+    return <div className='search-books'>
+      <div className='search-books-bar'>
+        <Link className='close-search' to='/'>Close</Link>
+        <div className='search-books-input-wrapper'>
           {/* 
             NOTES: The search from BooksAPI is limited to a particular set of search terms.
             You can find these search terms here:
@@ -54,16 +28,16 @@ export default class Search extends Component {
             However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
             you don't find a specific author or title. Every search is limited by search terms.
           */}
-          <input type="text" 
-            placeholder="Search by title or author"
-            value={this.state.searchTerms}
-            onChange={this._handleSearch} />
+          <input type='text' 
+            placeholder='Search by title or author'
+            value={searchTerms}
+            onChange={({ target }) => this._handleSearch(target.value || '')} />
           
         </div>
       </div>
-      <div className="search-books-results">
-        <ol className="books-grid">
-          {Array.isArray(books) && books.map(book => <Book key={book.id} book={book} onBookShelfChange={this._onBookShelfChange} />)}
+      <div className='search-books-results'>
+        <ol className='books-grid'>
+          {Array.isArray(books) && books.map(book => <Book key={book.id} book={book} onBookShelfChange={onBookShelfChange} />)}
         </ol>
       </div>
     </div>
